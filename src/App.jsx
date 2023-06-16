@@ -1,37 +1,77 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import { useForm } from "react-hook-form";
+import Table from 'react-bootstrap/Table';
+import { useState, useEffect } from 'react';
+import LoginForm from './LoginForm';
+import Container from 'react-bootstrap/Container';
 
-export default function LoginForm() {
 
-    const { register, handleSubmit } = useForm();
+export default function App() {
 
-    const onSubmit = (data) => {
-        console.log(data);
+  const [todos, setTodo] = useState([]);
+  
+
+  useEffect(() => {
+    getData();
+  },[]);
+
+  const getData = async () => {
+    try {
+      const incomingData = await fetch("https://jsonplaceholder.typicode.com/todos");
+      const formattedData = await incomingData.json();
+      setTodo(formattedData);
     }
-    return (
-        <div>
-            <Form onSubmit={handleSubmit(onSubmit)}>
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" {...register("email")} />
-                    <Form.Text className="text-muted">
-                        We'll never share your email with anyone else.
-                    </Form.Text>
-                </Form.Group>
+    catch(error){
+      console.log(error);
+    }
+  };
 
-                <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" {...register("password")} />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="formBasicCheckbox">
-                    <Form.Check type="checkbox" label="Check me out" />
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
-            </Form>
-        </div>
-    )
+  return (
+    
+    <div className='mx-5'>
+      <Container className='mt-5 pt-5'>
+        <h1 className='text-center'>Login Form</h1>
+        <LoginForm/>
+      </Container>
+      
+      <h1 className='text-center my-5'>To Do List</h1>
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Completed</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          {
+            todos.map((todo,i) => {
+             
+              
+
+             { return todo.completed ?  
+                <tr className='table1' key={todo.id}>
+                <td>{i+1}</td>
+                <td>{todo.title}</td>
+                <td className='bg-success'>{todo.completed}</td>
+              </tr>
+                 :
+                
+                  <tr className='table2' key={todo.id}>
+                  <td>{i+1}</td>
+                  <td>{todo.title}</td>
+                  <td className='bg-danger'>{todo.completed}</td>
+                </tr>
+                  
+                }
+              
+          
+            }
+            )
+          }
+
+        </tbody>
+      </Table>
+    </div>
+  )
 }
